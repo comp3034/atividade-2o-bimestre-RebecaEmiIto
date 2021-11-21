@@ -51,6 +51,15 @@ async def edit_user(user_id: int, new_value: schemas.UserEdit, db: Session = Dep
     raise HTTPException(status_code=400, detail="Usuário inexistente")
 
 
+@app.patch("/users/{user_id}", response_model=schemas.User)
+async def edit_user(user_id: int, new_value: schemas.UserEdit, db: Session = Depends(get_db)):
+    db_user = crud.get_user(db, user_id)
+    if db_user:
+        return crud.edit_user(db, user_id, new_value=new_value)
+    
+    raise HTTPException(status_code=400, detail="Usuário inexistente")
+
+
 # Measure
 @app.get("/measures/", response_model=List[schemas.Measure])
 def read_measures(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
